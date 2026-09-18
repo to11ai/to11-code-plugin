@@ -37,3 +37,17 @@ jobs:
       # the manifest and the marketplace entry agree on it, without tagging.
       - name: Check the version agrees with the marketplace entry
         run: claude plugin tag ./plugins/to11 --dry-run
+
+      # The step above reads the Claude manifest and the Claude marketplace
+      # entry. The Codex manifest carries a third copy of the version, a Codex
+      # plugin updates on it, and `codex plugin` has no validate command, so
+      # nothing else in this workflow would notice it standing still.
+      - name: Check both manifests agree on the version
+        run: |
+          claude_version=$(jq -r .version plugins/to11/.claude-plugin/plugin.json)
+          codex_version=$(jq -r .version plugins/to11/.codex-plugin/plugin.json)
+          if [ "$claude_version" != "$codex_version" ]; then
+            echo "::error::the two plugin manifests disagree: Claude $claude_version, Codex $codex_version"
+            exit 1
+          fi
+          echo "both manifests at $claude_version"

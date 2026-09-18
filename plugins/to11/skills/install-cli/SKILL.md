@@ -24,7 +24,7 @@ things.
 brew install to11ai/tap/to11
 ```
 
-**asdf**, version 0.16 or newer:
+**asdf**
 
 ```bash
 asdf plugin add to11 https://github.com/to11ai/asdf-to11
@@ -32,10 +32,14 @@ asdf install to11 latest
 asdf set --home to11 latest
 ```
 
-`--home` writes the pin to `$HOME/.tool-versions`. Without it the pin lands in
-the current directory, so `to11` stops resolving one directory up while the
-refresh points go on looking for it everywhere, and a `.tool-versions` is left
-behind in whatever repository the session happened to be in.
+`asdf set` arrived in 0.16. On 0.15 and older the last command is
+`asdf global to11 latest`, and `asdf --version` says which applies.
+
+Both write the pin to `$HOME/.tool-versions`, which is the point. The
+directory-local forms — `asdf set` without `--home`, and `asdf local` — leave
+`to11` resolving only under the current directory while the refresh points go
+on looking for it everywhere, and leave a `.tool-versions` behind in whatever
+repository the session happened to be in.
 
 **By hand** — every release at
 [to11ai/to11-cli](https://github.com/to11ai/to11-cli/releases) carries the

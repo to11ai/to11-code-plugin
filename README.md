@@ -48,10 +48,15 @@ it is quiet rather than broken.
 
 ## Releasing
 
-Claude Code delivers an update only when the manifest's `version` moves, so every
-change bumps `version` in both `plugins/to11/.claude-plugin/plugin.json` and the
-marketplace entry in `.claude-plugin/marketplace.json`. CI checks that the two
-agree.
+An agent delivers an update only when the manifest's `version` moves, so every
+change bumps it in all three places that hold one:
+
+- `plugins/to11/.claude-plugin/plugin.json`
+- `plugins/to11/.codex-plugin/plugin.json`
+- the marketplace entry in `.claude-plugin/marketplace.json`
+
+A Codex plugin updates on the Codex manifest's version, so bumping the Claude
+side alone ships nothing to Codex. CI checks all three agree.
 
 Auto-update is off by default for a marketplace that is not Anthropic's own. A
 developer turns it on in `/plugin` → **Marketplaces** → *Enable auto-update*, or

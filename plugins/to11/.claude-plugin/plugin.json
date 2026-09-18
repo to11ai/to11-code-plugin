@@ -1,7 +1,7 @@
 {
   "name": "to11",
   "displayName": "to11",
-  "description": "Keeps the skills your company publishes current in this agent, and points the agent's traffic at to11.",
+  "description": "Keeps the skills your company publishes current in this agent.",
   "version": "0.1.0",
   "author": {
     "name": "to11.ai",
