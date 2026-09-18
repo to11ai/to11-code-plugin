@@ -29,8 +29,13 @@ brew install to11ai/tap/to11
 ```bash
 asdf plugin add to11 https://github.com/to11ai/asdf-to11
 asdf install to11 latest
-asdf set to11 latest
+asdf set --home to11 latest
 ```
+
+`--home` writes the pin to `$HOME/.tool-versions`. Without it the pin lands in
+the current directory, so `to11` stops resolving one directory up while the
+refresh points go on looking for it everywhere, and a `.tool-versions` is left
+behind in whatever repository the session happened to be in.
 
 **By hand** — every release at
 [to11ai/to11-cli](https://github.com/to11ai/to11-cli/releases) carries the
