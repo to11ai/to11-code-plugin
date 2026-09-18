@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --claude-session-start-hook; else echo \"The to11 CLI is not installed, so to11 skills cannot be refreshed. The /to11:install-cli skill installs it.\"; fi"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --claude-prompt-submit-hook; fi"
+          }
+        ]
+      }
+    ],
+    "UserPromptExpansion": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --claude-command-expand-hook; fi"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --claude-skill-invoke-hook; fi"
+          }
+        ]
+      }
+    ]
+  }
+}
