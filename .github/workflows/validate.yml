@@ -1,0 +1,53 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          # `plugin tag --dry-run` reads the tags to tell whether this version
+          # was already released, so a shallow clone would let a duplicate
+          # version through.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 22
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Validate the plugin
+        run: claude plugin validate ./plugins/to11 --strict
+
+      - name: Validate the marketplace
+        run: claude plugin validate . --strict
+
+      # Every change to this repository bumps the plugin's version, because
+      # Claude Code delivers an update only when that field moves. This proves
+      # the manifest and the marketplace entry agree on it, without tagging.
+      - name: Check the version agrees with the marketplace entry
+        run: claude plugin tag ./plugins/to11 --dry-run
+
+      # The step above reads the Claude manifest and the Claude marketplace
+      # entry. The Codex manifest carries a third copy of the version, a Codex
+      # plugin updates on it, and `codex plugin` has no validate command, so
+      # nothing else in this workflow would notice it standing still.
+      - name: Check both manifests agree on the version
+        run: |
+          claude_version=$(jq -r .version plugins/to11/.claude-plugin/plugin.json)
+          codex_version=$(jq -r .version plugins/to11/.codex-plugin/plugin.json)
+          if [ "$claude_version" != "$codex_version" ]; then
+            echo "::error::the two plugin manifests disagree: Claude $claude_version, Codex $codex_version"
+            exit 1
+          fi
+          echo "both manifests at $claude_version"

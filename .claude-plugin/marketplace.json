@@ -1,0 +1,25 @@
+{
+  "name": "to11ai",
+  "description": "Plugins published by to11.ai, for coding agents that receive skills from a to11 project.",
+  "owner": {
+    "name": "to11.ai",
+    "url": "https://to11.ai"
+  },
+  "plugins": [
+    {
+      "name": "to11",
+      "source": "./plugins/to11",
+      "displayName": "to11",
+      "description": "Keeps the skills your company publishes current in this agent.",
+      "version": "0.1.0",
+      "author": {
+        "name": "to11.ai",
+        "url": "https://to11.ai"
+      },
+      "homepage": "https://to11.ai/docs/reference/cli",
+      "repository": "https://github.com/to11ai/to11-code-plugin",
+      "keywords": ["skills", "observability", "gateway"],
+      "category": "productivity"
+    }
+  ]
+}

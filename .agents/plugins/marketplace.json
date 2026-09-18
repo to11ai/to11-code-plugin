@@ -1,0 +1,19 @@
+{
+  "name": "to11ai",
+  "interface": {
+    "displayName": "to11"
+  },
+  "plugins": [
+    {
+      "name": "to11",
+      "source": {
+        "source": "local",
+        "path": "./plugins/to11"
+      },
+      "policy": {
+        "installation": "AVAILABLE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

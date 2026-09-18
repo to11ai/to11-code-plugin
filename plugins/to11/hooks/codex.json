@@ -1,0 +1,25 @@
+{
+  "description": "Refreshes to11 skills at session start and on every prompt.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --codex-session-start-hook; else echo \"The to11 CLI is not installed, so to11 skills cannot be refreshed. The to11 install-cli skill installs it.\"; fi"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --codex-prompt-submit-hook; fi"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "to11",
+  "version": "0.1.0",
+  "description": "Keeps the skills your company publishes current in this agent.",
+  "author": {
+    "name": "to11.ai",
+    "url": "https://to11.ai"
+  },
+  "homepage": "https://to11.ai/docs/reference/cli",
+  "repository": "https://github.com/to11ai/to11-code-plugin",
+  "keywords": ["skills", "observability", "gateway"],
+  "hooks": "./hooks/codex.json",
+  "interface": {
+    "displayName": "to11",
+    "developerName": "to11.ai",
+    "shortDescription": "Company skills, kept current",
+    "longDescription": "Receives the skills your company publishes in to11 and keeps them current in this agent. The skills in this plugin install the to11 CLI, configure it against your project, and let an agent read and publish skills without a browser.",
+    "category": "Productivity",
+    "websiteURL": "https://to11.ai"
+  }
+}
