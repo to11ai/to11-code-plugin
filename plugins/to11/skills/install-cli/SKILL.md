@@ -55,7 +55,30 @@ build.
 to11 --version
 ```
 
+## Update it
+
+The same way it was installed.
+
+**Homebrew**
+
+```bash
+brew upgrade to11ai/tap/to11
+```
+
+**asdf**
+
+```bash
+asdf install to11 latest
+asdf set --home to11 latest
+```
+
+On asdf 0.15 and older the last command is `asdf global to11 latest`.
+
+**By hand** — take the newest release from
+[to11ai/to11-cli](https://github.com/to11ai/to11-cli/releases) and replace the
+binary on `PATH`.
+
 ## Then configure it
 
 A binary on `PATH` is not yet configured against a project, so nothing is
-delivered yet. The `init-cli` skill covers that.
+delivered yet. The `configure-cli` skill covers that.

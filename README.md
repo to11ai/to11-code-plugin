@@ -25,11 +25,11 @@ codex plugin add to11@to11ai
 
 ## What it adds
 
-| Skill          | Does                                                                          |
-| -------------- | ------------------------------------------------------------------------------ |
-| `install-cli`  | Installs the `to11` binary                                                     |
-| `init-cli`     | Configures this machine against a to11 project, and runs a first sync          |
-| `manage-skills`| Reads and publishes the project's skills from inside a session, without a browser |
+| Skill           | Does                                                                              |
+| --------------- | --------------------------------------------------------------------------------- |
+| `install-cli`   | Installs the `to11` binary                                                        |
+| `configure-cli` | Sets to11 up in your home or a repository with `to11 ui`, or by writing the files |
+| `manage-skills` | Reads and publishes the project's skills from inside a session, without a browser |
 
 Plus refresh points, so a skill published by a colleague reaches you while a
 session is open rather than at the next one. Claude Code has four: session
