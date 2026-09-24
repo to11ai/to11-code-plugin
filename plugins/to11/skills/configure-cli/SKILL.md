@@ -74,7 +74,27 @@ provider: anthropic-to11-cli
 ```
 
 Both files in one place name the same organization; commands refuse to run
-until they do. After editing, run `to11 skill sync`.
+until they do. After editing, sign in with `to11 login` if nobody is signed in,
+then run `to11 skill sync`.
 
 Every key, with what it accepts, is in the
 [configuration reference](https://to11.ai/docs/reference/cli/configuration).
+
+## Set up without a terminal
+
+For CI, a container or a provisioning script, where nobody signs in, write the
+files above, put an API key into the environment as `TO11_API_KEY`, and run:
+
+```bash
+to11 skill sync
+```
+
+Create the key in the to11 dashboard under **Settings → API keys**; it is shown
+once. Inject it from a secret store rather than writing it into a script: a
+value on a command line reaches the shell history and the environment of
+everything that script starts.
+
+`to11 ui` is only for a person and never uses a key. Where a person is signed
+in, they win over `TO11_API_KEY`; the
+[credential order](https://to11.ai/docs/reference/cli/configuration#which-credential-a-command-uses)
+says which credential a command uses.
