@@ -76,7 +76,7 @@ On asdf 0.15 and older the last command is `asdf global to11 latest`.
 
 If `to11 --version` still prints the old version inside a repository, that
 repository's `.tool-versions` pins it. Run `asdf set to11 latest` there to move
-the pin.
+the pin. On asdf 0.15 and older, run `asdf local to11 latest` there instead.
 
 **By hand** — take the newest release from
 [to11ai/to11-cli](https://github.com/to11ai/to11-cli/releases) and replace the
