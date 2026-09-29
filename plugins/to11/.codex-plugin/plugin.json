@@ -1,6 +1,6 @@
 {
   "name": "to11",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Keeps the skills your company publishes current in this agent.",
   "author": {
     "name": "to11.ai",
@@ -14,7 +14,7 @@
     "displayName": "to11",
     "developerName": "to11.ai",
     "shortDescription": "Company skills, kept current",
-    "longDescription": "Receives the skills your company publishes in to11 and keeps them current in this agent. The skills in this plugin install the to11 CLI, configure it against your project, and let an agent read and publish skills without a browser.",
+    "longDescription": "Receives the skills your company publishes in to11 and keeps them current in this agent. The skills in this plugin install the to11 CLI, configure it against your project, let an agent read and publish skills without a browser, and check a skill before it is published.",
     "category": "Productivity",
     "websiteURL": "https://to11.ai"
   }
