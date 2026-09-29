@@ -13,17 +13,18 @@ You can see and change them from here. A browser is not required.
 
 ```bash
 to11 skill sync                # install whatever the project publishes now
-to11 skill list                # every skill, its version, and its state here
-to11 skill list --format json  # the same, for a program to read
+to11 skill list --format json  # every skill and its state on this machine
 ```
 
-`list` gives each skill one word for its state on this machine. `in-sync` is
-installed and current. `out-of-sync` is installed and behind what the label
-publishes. `pending` is published and not here yet. `changed` means the
-files on disk differ from what was delivered. `unmanaged` is something in the
-skills directory that to11 did not put there and will never touch.
+Read the JSON, not the table. For each skill, `installedVersion` is the version
+on this machine, `resolvedVersion` the one your configuration asks for, and
+`labelVersion` the one the label publishes. `tracking` says whether the
+configuration follows the label or pins a version. `changedFiles` lists files
+on disk that differ from what was delivered.
 
-An `out-of-sync` or `pending` row is what `to11 skill sync` fixes.
+A missing `installedVersion`, or one that differs from `resolvedVersion`, is
+what `to11 skill sync` fixes. A row with only a path and a `state` is something
+in a skills directory that to11 did not put there and will never touch.
 
 ## Change one
 
