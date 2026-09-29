@@ -57,12 +57,9 @@ Every skill gets this review, whatever its source: the person's own draft, a
 colleague's, a well-known repository, and a new version of a skill the project
 already has.
 
-Read every file in the folder, not only `SKILL.md`. A reference file or a script
-is reached through the entry document and can carry an instruction just as well.
-
-```bash
-find "<folder>" -type f        # everything that will be published
-```
+Read every file in the folder, not only `SKILL.md`: every one of them is
+published. A reference file or a script is reached through the entry document
+and can carry an instruction just as well.
 
 Look for:
 
@@ -74,11 +71,6 @@ Look for:
   commands that run on their events for the rest of the session.
   `allowed-tools` lets the tools it lists run without asking during the turn
   that invokes the skill.
-
-  ```bash
-  grep -rnE '[!][`]|^[[:space:]]*[`]{3}[!]' "<folder>"
-  ```
-
 - **Commands and scripts it tells the agent to run.** For each one: what it
   reads, what it writes, and what it connects to.
 - **Servers it asks for.** In Codex, `agents/openai.yaml` can declare MCP
@@ -227,19 +219,13 @@ they say to go ahead and why, that is the decision.
 ## Store it
 
 The reason says where the skill came from, what the check found, and what was
-overridden and why, in your own words: never paste the skill's text into it.
-Write the reason, and a new skill's description, to files with your
-file-writing tool rather than through the shell, and keep those files outside
-the checked folder, or they are stored with it. Pass each as
-`"$(cat "<file>")"`. The outer quotes hand the file's text over as one argument
-and run nothing in it; the inner ones keep a path with a space in one piece,
-where an unquoted one would pass an empty reason without an error.
+overridden and why, in your own words; nothing from the skill goes into it. A
+new skill's description is the skill's own text, so it reaches the command
+without the shell running anything in it.
 
 ```bash
-to11 skill store <slug> --dir "<folder>" --reason "$(cat "<reason-file>")"
-to11 skill store <slug> --from "<file>" --reason "$(cat "<reason-file>")"   # a single file
-to11 skill store <slug> --dir "<folder>" --reason "$(cat "<reason-file>")" \
-  --description "$(cat "<description-file>")"                            # a new skill
+to11 skill store <slug> --dir <folder> --reason <reason>
+to11 skill store <slug> --from <file> --reason <reason>     # a single file
 ```
 
 `--reason` is kept in the skill's history, so it shows what was known when the
