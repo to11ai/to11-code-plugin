@@ -30,6 +30,11 @@ An `out-of-sync` or `pending` row is what `to11 skill sync` fixes.
 A skill is a folder. The entry document is `SKILL.md`; anything beside it is a
 reference file the entry document can link to.
 
+Check what you are about to store with the `import-skill` skill first — a new
+skill or a new version, written here or brought in from elsewhere. `store`
+installs the version on this machine straight away, and every agent that loads
+it acts on what it says.
+
 ```bash
 to11 skill store <slug> --dir ./my-skill        # publish a new version from a folder
 to11 skill store <slug> --from ./SKILL.md       # …or a single file
