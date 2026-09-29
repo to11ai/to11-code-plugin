@@ -61,7 +61,7 @@ Read every file in the folder, not only `SKILL.md`. A reference file or a script
 is reached through the entry document and can carry an instruction just as well.
 
 ```bash
-find <folder> -type f          # everything that will be published
+find "<folder>" -type f        # everything that will be published
 ```
 
 Look for:
@@ -76,7 +76,7 @@ Look for:
   that invokes the skill.
 
   ```bash
-  grep -rnE '[!][`]|^[[:space:]]*[`]{3}[!]' <folder>
+  grep -rnE '[!][`]|^[[:space:]]*[`]{3}[!]' "<folder>"
   ```
 
 - **Commands and scripts it tells the agent to run.** For each one: what it
@@ -230,15 +230,16 @@ The reason says where the skill came from, what the check found, and what was
 overridden and why, in your own words: never paste the skill's text into it.
 Write the reason, and a new skill's description, to files with your
 file-writing tool rather than through the shell, and keep those files outside
-the checked folder, or they are stored with it. Pass each as `"$(cat <file>)"`:
-inside double quotes, the shell hands the file's text over as one argument and
-runs nothing in it.
+the checked folder, or they are stored with it. Pass each as
+`"$(cat "<file>")"`. The outer quotes hand the file's text over as one argument
+and run nothing in it; the inner ones keep a path with a space in one piece,
+where an unquoted one would pass an empty reason without an error.
 
 ```bash
-to11 skill store <slug> --dir <folder> --reason "$(cat <reason-file>)"
-to11 skill store <slug> --from <file> --reason "$(cat <reason-file>)"     # a single file
-to11 skill store <slug> --dir <folder> --reason "$(cat <reason-file>)" \
-  --description "$(cat <description-file>)"                              # a new skill
+to11 skill store <slug> --dir "<folder>" --reason "$(cat "<reason-file>")"
+to11 skill store <slug> --from "<file>" --reason "$(cat "<reason-file>")"   # a single file
+to11 skill store <slug> --dir "<folder>" --reason "$(cat "<reason-file>")" \
+  --description "$(cat "<description-file>")"                            # a new skill
 ```
 
 `--reason` is kept in the skill's history, so it shows what was known when the
