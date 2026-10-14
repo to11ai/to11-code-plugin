@@ -129,17 +129,3 @@ they ask.
 
 New skills reach Claude Code at the next session start, or at the next prompt
 once the plugin's refresh points run.
-
-## Without a person
-
-In CI, a container or a provisioning script, nobody signs in. Provide an API
-key in the environment as `TO11_API_KEY`, and link with every value given as
-a flag, so nothing is left to choose.
-
-The key is created in the to11 dashboard under **Settings → API keys** and is
-shown once. It comes from a secret store. It must never be written into a
-script, a file in the repository, or a command line, where it would reach shell
-history and the environment of everything the script starts. Do not ask the
-person to paste it into this conversation.
-
-A signed-in person always wins over `TO11_API_KEY`.
