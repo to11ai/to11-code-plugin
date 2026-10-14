@@ -54,7 +54,10 @@ there is more than one choice, never pick for them.
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
 | `missing_organization` | Which of their organizations the folder belongs to.                                                                                            |
 | `missing_project`      | Which project the skills come from. A choice marked `matched: directory name` fits the folder's name, so offer it as the likely one.           |
-| `missing_label`        | Which environment the skills follow. This is asked only when the project has several environments and none is `prod`. A project with `prod` takes it without asking. |
+| `missing_label`        | Which label the skills follow. A label says which released version of each skill arrives; `prod` is the usual one. This is asked only when the project offers several labels and none is `prod`. |
+
+Some CLI messages call a label an "environment". It is the same choice: the
+configuration key and the flag are both `label`.
 
 If the `message` opens by naming a value that cannot be read, the value
 given was mistyped or the person has no access to it. Say which value, and
@@ -71,10 +74,10 @@ one. Run link again once they say it is done.
 | `not_signed_in`   | The person signs in, as above.                                                                                                        |
 | `no_organization` | They belong to no organization. Someone at their company has to invite them.                                                          |
 | `no_projects`     | The organization has no project they can read. An admin has to give them access or create a project.                                 |
-| `no_environments` | The chosen project has no environment yet. Someone creates one in the dashboard, or the person picks another project.                 |
+| `no_environments` | The chosen project has no label to follow yet. Someone sets one up in the dashboard, or the person picks another project.             |
 
 `missing_organization` and `missing_project` also come as an `ask` when none of
-the projects on offer has an environment. Treat that like `no_environments`.
+the projects on offer has a label to follow. Treat that like `no_environments`.
 
 Anything other than `action_required` is an error, not a question. Show it to
 the person rather than retrying.
@@ -113,7 +116,7 @@ this one.
 Before you report success, `to11 skill list --format json` must show the
 person's skills as installed.
 
-- `no-label` means nothing is published to that environment yet.
+- `no-label` means nothing is released to that label yet.
 - `shadowed`, `conflict` and `dirty` mean something already in a skills folder
   is in the way. Ask before forcing anything over it.
 
