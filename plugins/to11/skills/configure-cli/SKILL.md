@@ -29,33 +29,62 @@ back. Signing in is the one step that may need that.
 
 ## Link the folder
 
-`to11 link` writes the configuration and offers the to11 plugin. Inside a repository it links the repository. With `--global` it links
-the person's home instead. Inside a repository, ask which one they want first.
-A repository's configuration is committed and applies to everyone who works in
+`to11 link` writes the configuration and offers the to11 plugin. Inside a
+repository it links the repository. With `--global` it links the person's
+home instead. Inside a repository, ask which one they want first. A
+repository's configuration is committed and applies to everyone who works in
 it, on top of each person's own.
 
-Run under you, `to11 link` never prompts. It either finishes, or it stops with
-an `action_required` answer naming what is missing:
+Run under you, `to11 link` never prompts. It either finishes, or it exits with
+one `action_required` object on stdout and writes nothing. Its `reason` says
+what is missing. Resolve that, run link again, and repeat until it finishes.
+Then sync, which installs the skills.
 
-- **With `choices` and `next`:** put the choices to the person, one question at
-  a time. Mark a choice the CLI matched to the folder's name as the likely
-  one. Then run the `next` command for the choice they made. Never pick for
-  them when there is more than one choice.
-- **With `ask`:** relay the message to the person, wait until they say it is
-  done, and run the same command again.
+On a folder that is already linked, show the person what is configured before
+changing anything. Pins and disables are lines in the configuration file. The
+`manage-skills` skill covers those.
 
-Repeat until it finishes, then sync, which installs the skills. Each answer settles one thing: the organization,
-then the project, then the environment the skills follow. `prod` is the usual
-environment.
+### Something to choose
+
+These come with `choices` and a `next` command for each. Put the choices to
+the person as one question. Run the `next` command for the one they pick. When
+there is more than one choice, never pick for them.
+
+| `reason`               | What the person decides                                                                                                                        |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `missing_organization` | Which of their organizations the folder belongs to.                                                                                            |
+| `missing_project`      | Which project the skills come from. A choice marked `matched: directory name` fits the folder's name, so offer it as the likely one.           |
+| `missing_label`        | Which environment the skills follow. This is asked only when the project has several environments and none is `prod`. A project with `prod` takes it without asking. |
+
+If the `message` opens by naming a value that cannot be read, the value
+given was mistyped or the person has no access to it. Say which value, and
+offer the `choices`, which hold only what they can read.
+
+### Something only a person can do
+
+These come with an `ask` and no command that finishes the work. Do not work
+around them. Relay `ask.message` to the person, and `ask.url` when there is
+one. Run link again once they say it is done.
+
+| `reason`          | What has to happen                                                                                                                  |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `not_signed_in`   | The person signs in, as above.                                                                                                        |
+| `no_organization` | They belong to no organization. Someone at their company has to invite them.                                                          |
+| `no_projects`     | The organization has no project they can read. An admin has to give them access or create a project.                                 |
+| `no_environments` | The chosen project has no environment yet. Someone creates one in the dashboard, or the person picks another project.                 |
+
+`missing_organization` and `missing_project` also come as an `ask` when none of
+the projects on offer has an environment. Treat that like `no_environments`.
+
+Anything other than `action_required` is an error, not a question. Show it to
+the person rather than retrying.
+
+### Before running a `next` command
 
 The `next` commands accept the defaults. These are the targets for the agents
 detected on this machine, and the to11 plugin for each of them. Before running
 one, tell the person what it will set up. Add `--target` if they want skills
 in another folder, and `--no-plugin` if they do not want the plugin.
-
-On a folder that is already linked, show the person what is configured before
-changing anything. Pins and disables are lines in the configuration file. The
-`manage-skills` skill covers those.
 
 ## Route Claude Code through to11
 
