@@ -22,10 +22,10 @@ than the person's home, so check from the folder being set up.
 ## Sign in
 
 `to11 whoami` says whether someone is signed in and which organizations they
-belong to. If nobody is, the person signs in with `to11 login`. In Claude Code
-they can try `! to11 login` at the prompt. If the CLI answers that it cannot
-sign in from here, they run `to11 login` in a terminal of their own and come
-back. Signing in is the one step that may need that.
+belong to. If nobody is, run `to11 login` yourself. It opens the person's
+browser, and they finish the sign-in there. If the CLI answers that it cannot
+sign in from here, the person runs `to11 login` in a terminal of their own and
+comes back. Signing in is the one step that may need that.
 
 ## Link the folder
 
