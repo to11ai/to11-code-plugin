@@ -29,6 +29,9 @@ jobs:
       - name: Validate the plugin
         run: claude plugin validate ./plugins/to11 --strict
 
+      - name: Test the hooks module
+        run: claude plugin test ./plugins/to11
+
       - name: Validate the marketplace
         run: claude plugin validate . --strict
 
