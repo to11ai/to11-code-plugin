@@ -35,24 +35,32 @@ function isLoopback(hostname: string): boolean {
 // the CLI's and is not drawn as a link. The base is returned as written, not
 // as `URL` would spell it: `to11 open` compares the host with the port the CLI
 // wrote, so a dropped `:443` would make it refuse the link.
+//
+// Checked on the text itself, then against how `URL` reads it, so a spelling
+// the CLI never writes (dot segments, backslashes, user info, `127.1`) is
+// refused rather than passed on as something else.
 export function checkBase(raw: string | undefined): string | undefined {
-  if (raw === undefined || raw.trim() === '') {
+  const parts = raw?.match(/^(https?):\/\/([^/?#@\s\\]+)(\/p\/[^/?#\s\\]+\/sessions\/)$/)
+  if (raw === undefined || parts === null || parts === undefined) {
     return undefined
   }
+  const [, scheme, host = '', path] = parts
   let url: URL
   try {
     url = new URL(raw)
   } catch {
     return undefined
   }
-  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && isLoopback(url.hostname))) {
-    return undefined
-  }
+  const defaultPort = scheme === 'https' ? '443' : '80'
+  const written = host.toLowerCase()
+  // `URL` respells an IPv6 address (`::ffff:127.0.0.1` as `::ffff:7f00:1`),
+  // which is the same address; any other host must read back as written.
+  const sameHost =
+    written.startsWith('[') || written === url.host || written === `${url.host}:${defaultPort}`
   if (
-    raw.includes('?') ||
-    raw.includes('#') ||
-    !raw.endsWith('/') ||
-    !/^\/p\/[^/]+\/sessions\/$/.test(url.pathname)
+    url.pathname !== path ||
+    !sameHost ||
+    (scheme !== 'https' && !isLoopback(url.hostname))
   ) {
     return undefined
   }
@@ -149,7 +157,7 @@ export const register: Register = (on, options) => {
           await $.clock.sleep(ms)
           $.ui.invalidate('ui.render')
         }
-      })()
+      })().catch(() => {}) // a reload mid-wait ends the loop, and that is fine
     }
     return ended
   })

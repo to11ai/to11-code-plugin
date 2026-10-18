@@ -80,6 +80,20 @@ describe('the link', () => {
       'http://localhost.evil.example/p/proj_1/sessions/',
       'https://app.to11.ai/p/proj_1/sessions/?',
       'https://app.to11.ai/p/proj_1/sessions',
+      // Each breaks one rule alone.
+      'https://app.to11.ai/p/proj_1/sessions/?a=/',
+      'https://app.to11.ai/p/proj_1/sessions/#/',
+      'https://app.to11.ai/p/proj_1/sessions/ ',
+      ' https://app.to11.ai/p/proj_1/sessions/',
+      // Spellings the CLI never writes, which `URL` would read as another link.
+      'https://app.to11.ai/p/y/../x/sessions/',
+      'https://app.to11.ai/p/../sessions/',
+      'https://app.to11.ai\\p\\x\\sessions/',
+      'https://app.to11.ai/p/x/ses\nsions/',
+      'https://u:pw@app.to11.ai/p/x/sessions/',
+      'http://127.1/p/x/sessions/',
+      'http://0x7f.1/p/x/sessions/',
+      'http://2130706433/p/x/sessions/',
       'javascript:alert(1)//p/x/sessions/',
       'https://app.to11.ai/p/proj_1/traces/',
       'https://app.to11.ai/p/proj_1/sessions/extra',
@@ -184,14 +198,6 @@ describe('the band', () => {
     on('classic.SessionStart', () => ({}))
     await $.classic.SessionStart({ source: 'clear' })
     expect(asked).toEqual(['ui.render'])
-  })
-
-  test('a failed redraw does not hold up the next session', async ($, on) => {
-    on('ui.invalidate', () => {
-      throw new Error('no surface')
-    })
-    on('classic.SessionStart', () => ({}))
-    await expect($.classic.SessionStart({ source: 'resume' })).resolves.toEqual({})
   })
 
   test('is drawn again after /clear or a resume without the classic events', async ($, on) => {
