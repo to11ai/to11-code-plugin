@@ -4,8 +4,9 @@ description: Check a skill for security, ambiguity, correctness and completeness
 ---
 
 `to11 skill store` makes a new version `latest`: it is installed on this
-machine straight away, and everyone who follows `latest` receives it on their
-next sync. A skill is instructions an agent carries out with the person's
+machine straight away, and everyone who receives the skill and follows
+`latest` gets it on their next sync — for a new skill, every configuration that
+follows the whole project. A skill is instructions an agent carries out with the person's
 access, so what it says is checked before it is stored.
 
 This skill covers checking a skill and storing it. Every other `to11 skill`
@@ -112,7 +113,7 @@ Look for:
   that mixes scripts, or that is not the vendor's documented one, is a finding
   even when it resolves.
 - **Secrets.** Keys, tokens, passwords, internal URLs. Storing publishes them to
-  everyone who follows `latest`.
+  everyone who receives the skill.
 - **Files that do not belong.** `.git`, `.env`, editor and system leftovers,
   build output, binaries.
 - **Parts that are harmless alone.** A script that looks routine, plus a grant

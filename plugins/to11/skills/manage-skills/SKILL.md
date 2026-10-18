@@ -45,8 +45,8 @@ reference file.
 
 ## Storing is publishing
 
-`store` makes the new version `latest`, so everyone whose configuration follows
-`latest` receives it on their next sync. There is no draft and no separate
+`store` makes the new version `latest`, so everyone who receives the skill and
+follows `latest` gets it on their next sync. There is no draft and no separate
 release step, and the CLI cannot take a version back. Store only what the
 person has decided to send.
 
@@ -55,8 +55,10 @@ machine keeps it while later stores move `latest` on. Remove the `version:`
 line to follow `latest` again.
 
 A slug the project does not have is created, and the output says `created`
-rather than `stored`. Everyone who follows `latest` receives a created skill
-too, so for an update `created` means the slug is wrong.
+rather than `stored`; for an update, that means the slug is wrong. A created
+skill arrives on the next sync wherever a project entry follows the whole
+project. An entry that names its skills shows it as `available`, and it arrives
+there only once someone adds it with `to11 link`.
 
 ## Turning one off
 
