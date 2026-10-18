@@ -54,7 +54,7 @@ version: 1
 organization: acme          # the organization every project below belongs to
 projects:
   - project: sre/runbooks   # workspace/project, or a proj_ id
-    label: prod             # which version of each skill to follow
+    label: latest           # the only label: each skill's newest stored version
 targets:                    # claude-code and codex at most once each
   - type: claude-code       # ~/.claude/skills, or <repo>/.claude/skills
   - type: codex             # ~/.agents/skills
