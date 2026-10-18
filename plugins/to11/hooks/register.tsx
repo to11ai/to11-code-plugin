@@ -9,13 +9,32 @@ import type { EngineInterface, Register } from 'claude-code'
 // Unset means there is nothing to link to: the session was not started by
 // `to11 code` (so it is not traced), or the developer turned the link off.
 
+// Every way a session ends up without a link, in the order they are likely.
 const OFF_HINT =
-  'Start the session with `to11 code claude` to trace it. If you did, the link ' +
-  'is turned off: drop `--no-session-link` or `TO11_SESSION_LINK=0`.'
+  'A link comes from `to11 code claude` when it routes the session through to11 ' +
+  'to a project, unless `--no-session-link`, `--no-gateway` or ' +
+  '`TO11_SESSION_LINK=0` turns it off. `TO11_API_URL` or `TO11_GATEWAY_URL` ' +
+  'without `TO11_WEB_URL` leaves the dashboard unknown, and a to11 CLI too old ' +
+  'to pass the link passes none: update it.'
+
+// The hosts the CLI counts as this machine (`isLoopback` in its web.go):
+// `localhost`, and any loopback IP, IPv4-mapped ones included. `URL` hands
+// IPv6 back bracketed and compressed, an IPv4-mapped one in hex.
+function isLoopback(hostname: string): boolean {
+  const host = hostname.replace(/^\[(.*)\]$/, '$1').toLowerCase()
+  return (
+    host === 'localhost' ||
+    /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host) ||
+    host === '::1' ||
+    /^::ffff:7f[0-9a-f]{2}:[0-9a-f]{1,4}$/.test(host)
+  )
+}
 
 // A link base the CLI wrote: an https origin, or http on this machine for a
 // local dashboard, followed by `/p/<project>/sessions/`. Anything else is not
-// the CLI's and is not drawn as a link.
+// the CLI's and is not drawn as a link. The base is returned as written, not
+// as `URL` would spell it: `to11 open` compares the host with the port the CLI
+// wrote, so a dropped `:443` would make it refuse the link.
 export function checkBase(raw: string | undefined): string | undefined {
   if (raw === undefined || raw.trim() === '') {
     return undefined
@@ -26,14 +45,18 @@ export function checkBase(raw: string | undefined): string | undefined {
   } catch {
     return undefined
   }
-  const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
-  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && loopback)) {
+  if (url.protocol !== 'https:' && !(url.protocol === 'http:' && isLoopback(url.hostname))) {
     return undefined
   }
-  if (url.search !== '' || url.hash !== '' || !/^\/p\/[^/]+\/sessions\/$/.test(url.pathname)) {
+  if (
+    raw.includes('?') ||
+    raw.includes('#') ||
+    !raw.endsWith('/') ||
+    !/^\/p\/[^/]+\/sessions\/$/.test(url.pathname)
+  ) {
     return undefined
   }
-  return url.href
+  return raw
 }
 
 export function sessionLink(base: string, sessionId: string): string {
@@ -71,8 +94,11 @@ async function open($: EngineInterface, link: string): Promise<string> {
   let result
   try {
     result = await $.process.run(['to11', 'open', link])
-  } catch {
-    return `${link}\n\nThe to11 CLI is not on your PATH, so this link was not opened. Open it yourself.`
+  } catch (error) {
+    // `run` rejects when `to11` cannot start (most often: not on the PATH),
+    // when it outlives the call's timeout, or where the host runs no commands.
+    const why = error instanceof Error ? error.message : String(error)
+    return `${link}\n\nNot opened: \`to11 open\` could not run (${why}). Open the link yourself.`
   }
   if (result.exitCode === 0) {
     return `${link}\n\nOpened in your browser.`
@@ -109,6 +135,24 @@ export const register: Register = (on, options) => {
     $.ui.invalidate('ui.render')
     return result
   }).catch(($, e, next) => next(e)) // a failed redraw never holds the session up
+
+  // Where an organization manages Claude Code, a plugin the person installed
+  // does not see the classic events, so the hook above never runs there.
+  // `session.end` still does: once it has ended, the band is drawn again a
+  // little later, by when the next session has its id. The waits outlive the
+  // hook, so the end is not held up.
+  on('session.end', async ($, e, next) => {
+    const ended = await next(e)
+    if (e.reason === 'clear' || e.reason === 'resume') {
+      void (async () => {
+        for (const ms of [250, 1000, 3000]) {
+          await $.clock.sleep(ms)
+          $.ui.invalidate('ui.render')
+        }
+      })()
+    }
+    return ended
+  })
 
   on('command.run', { command: 'to11-trace' }, async $ => {
     const link = await currentLink($)

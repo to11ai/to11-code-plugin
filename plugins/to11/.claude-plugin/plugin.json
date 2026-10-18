@@ -19,7 +19,7 @@
     "showBand": {
       "type": "boolean",
       "title": "Show the session link above the prompt",
-      "description": "Draws the link to this session's traces above the prompt. /to11:trace and /to11:open work either way.",
+      "description": "Draws the link to this session's traces above the prompt. /to11-trace and /to11-open work either way.",
       "default": true
     }
   }

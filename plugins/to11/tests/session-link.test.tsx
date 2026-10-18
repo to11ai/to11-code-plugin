@@ -55,8 +55,19 @@ describe('the link', () => {
 
   test('takes only a base the CLI writes', () => {
     expect(checkBase(BASE)).toBe(BASE)
-    expect(checkBase('http://localhost:3000/p/proj_1/sessions/')).toBe(
+    // Every host the CLI counts as this machine may be plain http.
+    for (const local of [
       'http://localhost:3000/p/proj_1/sessions/',
+      'http://LOCALHOST:3000/p/proj_1/sessions/',
+      'http://127.0.0.2:3000/p/proj_1/sessions/',
+      'http://[::1]:3000/p/proj_1/sessions/',
+      'http://[::ffff:127.0.0.1]:3000/p/proj_1/sessions/',
+    ]) {
+      expect(checkBase(local)).toBe(local)
+    }
+    // As written: `to11 open` compares the port the CLI wrote.
+    expect(checkBase('https://app.to11.ai:443/p/proj_1/sessions/')).toBe(
+      'https://app.to11.ai:443/p/proj_1/sessions/',
     )
     for (const refused of [
       undefined,
@@ -64,6 +75,11 @@ describe('the link', () => {
       '  ',
       'not a url',
       'http://app.to11.ai/p/proj_1/sessions/',
+      'http://128.0.0.1/p/proj_1/sessions/',
+      'http://[::2]/p/proj_1/sessions/',
+      'http://localhost.evil.example/p/proj_1/sessions/',
+      'https://app.to11.ai/p/proj_1/sessions/?',
+      'https://app.to11.ai/p/proj_1/sessions',
       'javascript:alert(1)//p/x/sessions/',
       'https://app.to11.ai/p/proj_1/traces/',
       'https://app.to11.ai/p/proj_1/sessions/extra',
@@ -103,6 +119,27 @@ describe('the band', () => {
     engineBand(on)
     const ui = await $.ui.mount({ ...BAND, surface: 'terminal' })
     expect(await ui.find({ type: 'Link' })).toBe(undefined)
+    await ui.unmount()
+  })
+
+  test('is one dim row that truncates to the band', async ($, on) => {
+    routed(on)
+    const ui = await $.ui.mount({ ...BAND, surface: 'terminal' })
+    const row = await ui.find({ type: 'Text', text: /to11 ↗ session/ })
+    expect(row?.props.dimColor).toBe(true)
+    expect(row?.props.wrap).toBe('truncate-end')
+    await ui.unmount()
+  })
+
+  test('draws nothing where the band has no row to give', async ($, on) => {
+    routed(on)
+    const ui = await $.ui.mount({
+      ...BAND,
+      surface: 'terminal',
+      props: { ...BAND.props, maxRows: 0 },
+    })
+    expect(await ui.find({ type: 'Link' })).toBe(undefined)
+    expect(await ui.find({ key: 'engine' })).toBeDefined()
     await ui.unmount()
   })
 
@@ -148,6 +185,30 @@ describe('the band', () => {
     await $.classic.SessionStart({ source: 'clear' })
     expect(asked).toEqual(['ui.render'])
   })
+
+  test('a failed redraw does not hold up the next session', async ($, on) => {
+    on('ui.invalidate', () => {
+      throw new Error('no surface')
+    })
+    on('classic.SessionStart', () => ({}))
+    await expect($.classic.SessionStart({ source: 'resume' })).resolves.toEqual({})
+  })
+
+  test('is drawn again after /clear or a resume without the classic events', async ($, on) => {
+    const clock = mock.clock(on)
+    const asked: string[] = []
+    on('ui.invalidate', ($, e) => {
+      asked.push(e.event)
+      return { value: undefined }
+    })
+    on('session.end', ($, e) => ({ sessionId: e.sessionId }))
+    for (const reason of ['clear', 'resume', 'prompt_input_exit'] as const) {
+      asked.length = 0
+      await $.session.end({ reason, sessionId: ID, resume: { id: ID } })
+      await clock.advance(5000)
+      expect(asked.length).toBe(reason === 'prompt_input_exit' ? 0 : 3)
+    }
+  })
 })
 
 describe('/to11-trace', () => {
@@ -162,8 +223,9 @@ describe('/to11-trace', () => {
     on('session.id', () => ({ value: ID }))
     const { text } = await run($, 'to11-trace')
     expect(text).toMatch(/no to11 link/)
-    expect(text).toMatch(/to11 code claude/)
-    expect(text).toMatch(/--no-session-link/)
+    for (const cause of ['to11 code claude', '--no-session-link', '--no-gateway', 'TO11_SESSION_LINK=0', 'TO11_WEB_URL', 'too old']) {
+      expect(text).toContain(cause)
+    }
   })
 })
 
@@ -214,11 +276,9 @@ describe('/to11-open', () => {
 
   test('prints the link when the CLI is not installed', async ($, on) => {
     routed(on)
-    on('process.run', () => {
-      throw new Error('to11: command not found')
-    })
+    on('process.run', () => ({ deny: 'to11: command not found' }))
     const { text } = await run($, 'to11-open')
-    expect(text).toMatch(/not on your PATH/)
+    expect(text).toMatch(/Not opened: `to11 open` could not run \(.*command not found\)\. Open the link yourself\.$/)
     expect(text).toMatch(LINK)
   })
 
