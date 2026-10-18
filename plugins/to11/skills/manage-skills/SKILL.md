@@ -1,11 +1,12 @@
 ---
 name: manage-skills
-description: See and change the skills this project publishes — list what exists, read one, create or update one, release it — from a session, without a browser.
+description: See and change the skills this project publishes — list what exists, read one, create or update one — from a session, without a browser.
 ---
 
-Skills in this project are to11 prompts released on a label. `to11 skill sync`
-installs every skill that label publishes onto this machine, so a change
-published once reaches every developer without anyone copying a file.
+Skills in this project are to11 prompts. Each has one label, `latest`, which
+is its newest stored version. `to11 skill sync` installs onto this machine what
+your configuration follows, so a change stored once reaches every developer
+without anyone copying a file.
 
 You can see and change them from here. A browser is not required.
 
@@ -18,13 +19,15 @@ to11 skill list --format json  # every skill and its state on this machine
 
 Read the JSON, not the table. For each skill, `installedVersion` is the version
 on this machine, `resolvedVersion` the one your configuration asks for, and
-`labelVersion` the one the label publishes. `tracking` says whether the
-configuration follows the label or pins a version. `changedFiles` lists files
-on disk that differ from what was delivered.
+`labelVersion` the one `latest` is. `tracking` is `label` when the
+configuration follows `latest` and `pinned` when it holds a version.
+`changedFiles` lists files on disk that differ from what was delivered.
 
 A missing `installedVersion`, or one that differs from `resolvedVersion`, is
-what `to11 skill sync` fixes. A row with only a path and a `state` is something
-in a skills directory that to11 did not put there and will never touch.
+what `to11 skill sync` fixes. A row whose `state` is `available` is a skill the
+project has and your configuration does not name; `to11 link` adds it. A row
+with only a path and a `state` is something in a skills directory that to11 did
+not put there and will never touch.
 
 ## Change one
 
@@ -40,17 +43,20 @@ The whole folder is the truth: a file that was in the previous version and is
 absent from this one is gone from the new one. That is the only way to remove a
 reference file.
 
-## Nobody else sees it until you release it
+## Storing is publishing
 
-`store` writes a version and moves no label, so it reaches nobody. The version
-lands on this machine so you can read what you just wrote, and it is pinned in
-your configuration so the next sync leaves it alone.
+`store` makes the new version `latest`, so everyone whose configuration follows
+`latest` receives it on their next sync. There is no draft and no separate
+release step, and the CLI cannot take a version back. Store only what the
+person has decided to send.
 
-```bash
-to11 skill release <slug>      # move the label to the stored version
-```
+The version also lands on this machine, pinned in your configuration, so your
+machine keeps it while later stores move `latest` on. Remove the `version:`
+line to follow `latest` again.
 
-That is the one command other people feel.
+A slug the project does not have is created, and the output says `created`
+rather than `stored`. Everyone who follows `latest` receives a created skill
+too, so for an update `created` means the slug is wrong.
 
 ## Turning one off
 
@@ -60,10 +66,13 @@ configuration — not commands:
 ```yaml
 projects:
   - project: workspace/project
-    label: live
+    label: latest
     skills:
       noisy-skill: { disabled: true }   # never delivered here
-      careful-skill: { version: 4 }     # held at 4, whatever the label moves to
+      careful-skill: { version: 4 }     # held at 4, whatever latest moves to
 ```
 
-Edit the file and run `to11 skill sync`. A disable always wins, in every scope.
+Edit the file and run `to11 skill sync`. A disable decides the directories of
+the file it is in: one in `~/.to11/skills.yaml` keeps the skill out of your
+home, and a repository that asks for it still installs it there. Add
+`enforced: true` beside it to keep it out of every repository too.

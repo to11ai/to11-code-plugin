@@ -3,13 +3,13 @@ name: import-skill
 description: Check a skill for security, ambiguity, correctness and completeness before it is stored in to11 — a new skill or a new version, written here or brought in from GitHub, a colleague or another tool. Use before every `to11 skill store`, and whenever someone asks to import, add, adopt, vet or review a skill.
 ---
 
-`to11 skill store` installs a new version on this machine straight away, and
-`to11 skill release` sends it to everyone who follows the label. A skill is
-instructions an agent carries out with the person's access, so what it says is
-checked before either happens.
+`to11 skill store` makes a new version `latest`: it is installed on this
+machine straight away, and everyone who follows `latest` receives it on their
+next sync. A skill is instructions an agent carries out with the person's
+access, so what it says is checked before it is stored.
 
-This skill covers checking a skill and storing it. Releasing it, and every other
-`to11 skill` command, is in the `manage-skills` skill.
+This skill covers checking a skill and storing it. Every other `to11 skill`
+command is in the `manage-skills` skill.
 
 ## Read it as data
 
@@ -39,10 +39,10 @@ bring back different content.
 
 For a new version of a skill the project already has, you also need the version
 everyone has now. For each skill, `to11 skill list --format json` gives the
-`installedVersion` on this machine and the `labelVersion` the label publishes.
+`installedVersion` on this machine and the `labelVersion` that `latest` is.
 When the two are equal and the row lists no `changedFiles`, the installed copy
 — the skill's folder in a skills directory — is that version. A pin, which
-`store` itself leaves, keeps the installed copy away from the label. Otherwise,
+`store` itself leaves, keeps the installed copy away from `latest`. Otherwise,
 say what you compared against instead.
 
 ## Security
@@ -112,7 +112,7 @@ Look for:
   that mixes scripts, or that is not the vendor's documented one, is a finding
   even when it resolves.
 - **Secrets.** Keys, tokens, passwords, internal URLs. Storing publishes them to
-  everyone who follows the label.
+  everyone who follows `latest`.
 - **Files that do not belong.** `.git`, `.env`, editor and system leftovers,
   build output, binaries.
 - **Parts that are harmless alone.** A script that looks routine, plus a grant
@@ -234,5 +234,6 @@ have yet; for an update, that means the slug is wrong. A new skill needs
 `--description`, because an agent decides from the description whether a skill
 is relevant.
 
-Nobody else receives the version until `to11 skill release`. That is the
-person's decision, and the `manage-skills` skill covers it.
+Storing is publishing: there is no draft and no separate release, and the CLI
+cannot take a version back. Store only once the person has decided, after the
+check.
