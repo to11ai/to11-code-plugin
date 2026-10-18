@@ -118,6 +118,9 @@ async function open($: EngineInterface, link: string): Promise<string> {
   return `${link}\n\nNot opened${said === '' ? '' : `: ${said}`}. Open the link yourself.`
 }
 
+// How long after a session ends each redraw comes, one wait after another.
+export const REDRAW_AFTER_END_MS = [250, 1000, 3000] as const
+
 export const register: Register = (on, options) => {
   const showBand = options.showBand !== false
 
@@ -147,18 +150,18 @@ export const register: Register = (on, options) => {
   // Where an organization manages Claude Code, a plugin the person installed
   // does not see the classic events, so the hook above never runs there.
   // `session.end` still does: once it has ended, the band is drawn again a
-  // little later, by when the next session has its id. The waits outlive the
-  // hook, so the end is not held up.
+  // little later, by when the next session has its id. That is done for every
+  // reason, since more than `/clear` and a resume move the process to another
+  // session (`/branch`, a fork), and a redraw as the process exits is harmless.
+  // The waits outlive the hook, so the end is not held up.
   on('session.end', async ($, e, next) => {
     const ended = await next(e)
-    if (e.reason === 'clear' || e.reason === 'resume') {
-      void (async () => {
-        for (const ms of [250, 1000, 3000]) {
-          await $.clock.sleep(ms)
-          $.ui.invalidate('ui.render')
-        }
-      })().catch(() => {}) // a reload mid-wait ends the loop, and that is fine
-    }
+    void (async () => {
+      for (const ms of REDRAW_AFTER_END_MS) {
+        await $.clock.sleep(ms)
+        $.ui.invalidate('ui.render')
+      }
+    })().catch(() => {}) // a reload mid-wait ends the loop, and that is fine
     return ended
   })
 

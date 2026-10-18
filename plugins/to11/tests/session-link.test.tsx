@@ -2,7 +2,7 @@ import type { On } from 'claude-code'
 import type { Engine } from 'claude-code/testing'
 import { describe, expect, mock, test } from 'claude-code/testing'
 
-import { checkBase, openerSaid, sessionLink } from '../hooks/register'
+import { REDRAW_AFTER_END_MS, checkBase, openerSaid, sessionLink } from '../hooks/register'
 
 const BASE = 'https://app.to11.ai/p/proj_01M28DJYV13A47ZHSR0S2G5KB8/sessions/'
 const ID = 'b53c55df-56f2-450e-89ec-89ad03011b34'
@@ -200,7 +200,7 @@ describe('the band', () => {
     expect(asked).toEqual(['ui.render'])
   })
 
-  test('is drawn again after /clear or a resume without the classic events', async ($, on) => {
+  test('is drawn again after the session ends, without the classic events', async ($, on) => {
     const clock = mock.clock(on)
     const asked: string[] = []
     on('ui.invalidate', ($, e) => {
@@ -208,11 +208,18 @@ describe('the band', () => {
       return { value: undefined }
     })
     on('session.end', ($, e) => ({ sessionId: e.sessionId }))
-    for (const reason of ['clear', 'resume', 'prompt_input_exit'] as const) {
+    // `/branch` and a fork move to another session too, so every reason counts.
+    for (const reason of ['clear', 'resume', 'other', 'prompt_input_exit'] as const) {
       asked.length = 0
       await $.session.end({ reason, sessionId: ID, resume: { id: ID } })
-      await clock.advance(5000)
-      expect(asked.length).toBe(reason === 'prompt_input_exit' ? 0 : 3)
+      // Not at once: the next session has no id yet when the end fires.
+      expect(asked.length).toBe(0)
+      for (const [at, ms] of REDRAW_AFTER_END_MS.entries()) {
+        await clock.advance(ms - 1)
+        expect(asked.length).toBe(at)
+        await clock.advance(1)
+        expect(asked.length).toBe(at + 1)
+      }
     }
   })
 })
