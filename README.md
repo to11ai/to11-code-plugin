@@ -32,7 +32,7 @@ codex plugin add to11@to11ai
 | `manage-skills` | Reads and publishes the project's skills from inside a session, without a browser |
 | `import-skill`  | Checks a skill's security, ambiguity, correctness and completeness before storing |
 
-Plus a link to the session's traces in Claude Code (below), and refresh
+Plus a link to the session's traces and session sync in Claude Code (below), and refresh
 points, so a skill published by a colleague reaches you while a
 session is open rather than at the next one. Claude Code has four: session
 start, prompt submitted, command expanded, and before a skill is used. Codex has
@@ -65,6 +65,23 @@ link; neither does one started with `--no-session-link` or
 The row is drawn by a hooks module, which Claude Code runs from v2.1.287. An
 older version ignores it and runs the rest of the plugin as before. The row
 never touches your `statusLine`.
+
+## Session sync
+
+In Claude Code, the plugin sends each session to to11's coding sessions after
+every response and when the session ends, once auto-sync is on:
+
+```bash
+to11 session autosync on            # this repository
+to11 session autosync on --global   # every repository
+```
+
+Both hooks run `to11 code --claude-sync-hook`, which returns at once and sends
+only what is new in the background, as `to11 session sync` would. With
+auto-sync off, which it is until someone turns it on, they do nothing. They
+need `to11` 0.33.0 or later; an older CLI does not know the mode, and the hooks
+stay quiet rather than report it after every response. Codex has no sync:
+`to11 session sync` reads Claude Code's transcripts only.
 
 ## It needs the CLI
 

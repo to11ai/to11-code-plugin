@@ -43,6 +43,26 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --claude-sync-hook 2>/dev/null || true; fi"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if command -v to11 >/dev/null 2>&1; then to11 code --claude-sync-hook 2>/dev/null || true; fi"
+          }
+        ]
+      }
     ]
   }
 }
