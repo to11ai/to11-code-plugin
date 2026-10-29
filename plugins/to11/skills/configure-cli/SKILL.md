@@ -132,7 +132,9 @@ show up in to11.
 If they do, `to11 code claude` starts a routed session. Its first run routes
 through the first project the configuration names. If that project has no
 `anthropic-to11-cli` provider, the run creates one, which everyone in the
-project can see. Tell the person this before they start.
+project can see. Tell the person this before they start. The person runs
+`to11 code claude` themselves, as the way they start Claude Code from then on.
+Never run it from this session: it starts another Claude Code.
 
 If they want a different project, environment or provider, the CLI lists each
 of them. A provider of kind `anthropic`, live in the chosen environment and
@@ -157,7 +159,8 @@ on disk, so ask before forcing.
 In a repository, the configuration under `.to11/` is meant to be committed. The
 state files beside it, `.skills.state.json` and `.skills.state.conflict.*.json`,
 and `local.yaml` must stay out of commits. If nothing ignores them yet, add
-that.
+that in `.to11/.gitignore`, so the rule covers only those files in `.to11/` and
+not the same names elsewhere in the repository.
 
 Tell the person what was written and where. Leave the commit to them unless
 they ask.
