@@ -82,7 +82,9 @@ outcomes it offers:
 - **Upload:** the folder is stored in the project as its newest version.
   Everyone who receives that skill gets it on their next sync, and the CLI
   cannot take a version back. Upload only what the person has decided to
-  publish, and check it with the `import-skill` skill first.
+  publish. Check the folder with the `import-skill` skill's checks first, but
+  do not copy or store it the way that skill goes on to. The upload `next`
+  command is the one store.
 - **Skip:** every folder stays as it is, and the sync reports them as
   conflicts.
 
@@ -146,10 +148,11 @@ this one.
 
 ## Show that it worked
 
-Before you report success, `to11 skill list --format json` must show the
-person's skills as installed. For any that are not, the row's state says why.
-States that `--force` settles replace or remove files on disk, so ask before
-forcing.
+Before you report success, `to11 skill list --format json` must show every
+skill the person chose to receive as installed. For any that is not, the row's
+state says why. A folder the person kept or skipped stays as it is: never
+force it. Anything else that `--force` would settle replaces or removes files
+on disk, so ask before forcing.
 
 In a repository, the configuration under `.to11/` is meant to be committed. The
 state files beside it, `.skills.state.json` and `.skills.state.conflict.*.json`,
